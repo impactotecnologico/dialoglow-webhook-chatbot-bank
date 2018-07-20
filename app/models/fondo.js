@@ -1,15 +1,23 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-
-var Detalle = new Schema({
+var Fondo = new Schema({
+    fondo:{
+        type:String,
+        required:false,
+        index: {unique: true}
+    },
+    descripcion: {
+        type: String,
+        required: false
+    },
     divisa:{
-      type:String,
-      required:false
+        type:String,
+        required:false
     },
     comercializacion:{
-      type:Date,
-      required:false
+        type:Date,
+        required:false
     },
     activo:{
         type:Boolean,
@@ -27,24 +35,6 @@ var Detalle = new Schema({
         type:Number,
         required:false
     }
-});
-
-mongoose.model('Detalle', Detalle);
-
-var Fondo = new Schema({
-fondo:{
-    type:String,
-    required:false,
-    index: {unique: true}
-},
-descripcion: {
-    type: String,
-    required: false
-},
-detalles:{
-    type: Schema.ObjectId,
-    ref: 'Detalle'  
-}
 });
 
 module.exports = mongoose.model('Fondo', Fondo);

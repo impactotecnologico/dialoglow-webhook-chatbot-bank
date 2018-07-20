@@ -54,10 +54,6 @@ function responseGetDetalleUnFondo (query, res) {
             throw err;
         }
 
-        console.log("*****************************************");
-        console.log(elFondo);
-        console.log("*****************************************");
-
         var informacionDetallada = "Buena elección!. Para tu inversión de " + parameters.p_cantidad + " euros, es una buena opción. ";
 
         informacionDetallada += "Te comento el detalle de este fondo: <br>";
@@ -67,6 +63,8 @@ function responseGetDetalleUnFondo (query, res) {
         informacionDetallada += "Una complejidad " + elFondo.complejidad + " <br> ";
         
         informacionDetallada += "La divisa de comercialización es el " + elFondo.divisa + " <br> ";
+
+        informacionDetallada += "Sus índices son: " + elFondo.descripcion + " <br> ";
     
         res.json({
             fulfillmentText: informacionDetallada
@@ -214,16 +212,27 @@ function validateEmail(email) {
 function getParameters(query){
     var parameters = [];
 
-    for (var i= 0; query.outputContexts.length > 0; i++) {
-        parameters = query.outputContexts[i].parameters;
+    var contextos = query.outputContexts;
 
-        if(parameters.hasOwnProperty("p_cantidad") &&
-            parameters.hasOwnProperty("p_unFondo") &&
-            parameters.hasOwnProperty("p_username") &&
-            parameters.hasOwnProperty("p_tipoRiesgo")     
-        ){
-            break;
+    console.log("contextos===" + contextos.length);
+
+    for (var i= 0; i < contextos.length; i++) {
+
+        console.log("indice: " + i, contextos[i]);
+
+        if (contextos[i] != undefined) {
+            parameters = contextos[i].parameters;
+
+            if(parameters.hasOwnProperty("p_cantidad") &&
+                parameters.hasOwnProperty("p_unFondo") &&
+                parameters.hasOwnProperty("p_username") &&
+                parameters.hasOwnProperty("p_tipoRiesgo")     
+            ){
+                break;
+            }
         }
-        parameters = query.outputContexts[2].parameters;
+        
     }
+
+    return parameters;
 }
