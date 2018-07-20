@@ -11,11 +11,10 @@ var agent = undefined;
 routerFondos.use(function(req, res, next) {
     
     agent = new WebhookClient({ request: req, response: res });
-    /*
-    console.log('Dialogflow Request headers: ' + JSON.stringify(req.headers));
-    console.log('Dialogflow Request body: ' + JSON.stringify(req.body));
-    */
 
+    //console.log('Dialogflow Request headers: ' + JSON.stringify(req.headers));
+    console.log('Dialogflow Request body: ' + JSON.stringify(req.body));
+    
     next();
 });
   

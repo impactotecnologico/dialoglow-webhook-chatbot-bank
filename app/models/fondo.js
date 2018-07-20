@@ -29,18 +29,22 @@ var Detalle = new Schema({
     }
 });
 
+mongoose.model('Detalle', Detalle);
+
 var Fondo = new Schema({
 fondo:{
     type:String,
     required:false,
     index: {unique: true}
 },
+descripcion: {
+    type: String,
+    required: false
+},
 detalles:{
     type: Schema.ObjectId,
     ref: 'Detalle'  
 }
 });
-
-mongoose.model('Detalle', Detalle);
 
 module.exports = mongoose.model('Fondo', Fondo);
