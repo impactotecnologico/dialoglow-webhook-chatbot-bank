@@ -54,7 +54,7 @@ function responseGetDetalleUnFondo (query, res) {
             throw err;
         }
 
-        var informacionDetallada = "Buena elección!. Para tu inversión de " + parameters.p_cantidad + " euros, es una buena opción. ";
+        var informacionDetallada = "<strong>"+elFondo.fondo+"</strong>, buena elección! Para tu inversión de " + parameters.p_cantidad + " euros, es una buena opción. ";
 
         informacionDetallada += "Te comento el detalle de este fondo: <br>";
 
@@ -91,7 +91,7 @@ function responseEmail (query, res) {
         response += "Igualmente quedamos a tu disposición para una próxima ocasión. ";
     }
 
-    response += "<br>¿Hay algo más en lo que pueda ayudarte?";
+    response += "<br>¿Hay algo más en lo que pueda ayudarte?<br>";
 
     res.json({
         fulfillmentText: response
@@ -112,7 +112,7 @@ function responseFondoRecomendadoAleatorio (query, res){
 
         var informacionDetallada = "Ok, para tu inversión de " + parameters.p_cantidad + " euros, te recomiendo el fondo ";
 
-        informacionDetallada += "<b>" + elFondo.fondo + "</b>" + ". Te comento el detalle de este fondo: <br>";
+        informacionDetallada += "<strong>" + elFondo.fondo + "</strong>" + ". Te comento el detalle de este fondo: <br>";
 
         informacionDetallada += "Tiene un nivel de riesgo " + elFondo.nivelRiesgo + " <br> ";
 
@@ -120,7 +120,7 @@ function responseFondoRecomendadoAleatorio (query, res){
         
         informacionDetallada += "La divisa de comercialización es el " + elFondo.divisa + " <br> ";
 
-        informacionDetallada += "Esa sería mi recomendación.";
+        informacionDetallada += "Esa sería mi recomendación. <br>";
     
         res.json({
             fulfillmentText: informacionDetallada
@@ -144,9 +144,9 @@ function responseGetDetalleFondos(query, res) {
 
             console.log(element);
 
-            informacionDetallada += "<b>" + element.fondo + "</b>" + "<br>";
+            informacionDetallada += "<strong>" + element.fondo + "</strong>" + "<br>";
 
-            informacionDetallada += element.descripcion + " <br> ";
+            informacionDetallada += element.descripcion + " <br><br>  ";
         });
         res.json({
             fulfillmentText: informacionDetallada
@@ -160,26 +160,33 @@ function responseGetFondosByParameters(query, res) {
     var busqueda = getTipoRiesgo(parameters);
     var confirmacionPersonalizada = "";
 
-    if ( (Math.floor(Math.random()*(20-5+1))+5) % 2 == 0 ){
-        confirmacionPersonalizada = `Vale ${parameters.p_username}, buscas fondos de ${parameters.p_tipoRiesgo} y tienes pensado invertir ${parameters.p_cantidad} euros. `;
-    } else {
-        confirmacionPersonalizada = `Ok, veamos ${parameters.p_username}, tenemos que te interesan fondos de ${parameters.p_tipoRiesgo} y quieres invertir inicialmente unos ${parameters.p_cantidad} euros. `;
+    var nombre = ""
+    if (parameters.p_username != undefined){
+        nombre = parameters.p_username + ", ";
     }
 
-    
+    if ( (Math.floor(Math.random()*(20-5+1))+5) % 2 == 0 ){
+        confirmacionPersonalizada = `Vale ${nombre}buscas fondos de ${parameters.p_tipoRiesgo} y tienes pensado invertir ${parameters.p_cantidad} euros. `;
+    } else {
+        confirmacionPersonalizada = `Ok ${nombre}tenemos que te interesan fondos de ${parameters.p_tipoRiesgo} y quieres invertir inicialmente unos ${parameters.p_cantidad} euros. `;
+    }
+
+    console.log("Busqueda: ", busqueda);
+
     Fondo.find(busqueda, function (err, losFondos) {
         if (err) {
             console.log("error...>");
             throw err;
         }
-        confirmacionPersonalizada += `\nLos fondos que encajan con tu solicitud son: \n`;
+        confirmacionPersonalizada += `\nLos fondos que encajan con tu solicitud son:`;
+        var li = "<ul>";
         losFondos.forEach(function (element) {
-            confirmacionPersonalizada += element.fondo + ", ";
+            li += "<li>" + element.fondo + "</li>";
         });
 
-        confirmacionPersonalizada = confirmacionPersonalizada.slice(0, -2);
+        confirmacionPersonalizada += li + "</ul>";
 
-        confirmacionPersonalizada += "<br>¿De cuál te informo?      " ;
+        confirmacionPersonalizada += "¿De cuál te informo?<br><br>       " ;
 
         res.json({
             fulfillmentText: confirmacionPersonalizada.slice(0, -2)
@@ -223,7 +230,7 @@ function getParameters(query){
         if (contextos[i] != undefined) {
             parameters = contextos[i].parameters;
 
-            if(parameters.hasOwnProperty("p_cantidad") &&
+            if(parameters != undefined && parameters.hasOwnProperty("p_cantidad") &&
                 parameters.hasOwnProperty("p_unFondo") &&
                 parameters.hasOwnProperty("p_username") &&
                 parameters.hasOwnProperty("p_tipoRiesgo")     
